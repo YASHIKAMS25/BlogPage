@@ -1,0 +1,603 @@
+{% extends "base.html" %}
+
+{% load static %}
+
+{% load wagtailcore_tags %}
+
+{% block body_class %}template-blogindexpage{% endblock %}
+
+<!-- Load wagtailimages_tags: -->
+{% load wagtailcore_tags wagtailimages_tags %}
+
+<title>
+    {% block title %}
+        {{ shop_name }} | {{page.title}} 
+    {% endblock %}
+</title>
+
+{% block content %}
+<style>
+    
+
+    .modal {
+    display: none; 
+    position: fixed; 
+    z-index: 1; 
+    left: 0;
+    top: 0;
+    width: 100%; 
+    height: 100%; 
+    overflow: auto;
+    background-color: rgba(0, 0, 0, 0.4);
+}
+
+.modal-content {
+    background-color: white;
+    margin: 15% auto; 
+    padding: 20px;
+    border: 1px solid #888;
+    width: 80%;
+}
+
+.close {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+}
+
+.close:hover, .close:focus {
+    color: black;
+    cursor: pointer;
+}
+
+
+
+    .share-icon {
+        font-size: 30px;
+        color: black; /* Change this for better visibility */
+    }
+
+    .like-icon {
+        cursor: pointer;
+        font-size: 20px;
+        color: gray; /* Default color */
+        transition: color 0.3s ease;
+        margin-right: 5px; /* Add some space between the icon and the count */
+        }
+
+        .like-icon.liked {
+        color: blue; /* Color when liked */
+        }
+
+        #like-count {
+        font-weight: bold;
+    }
+
+    .share-box {
+        position: absolute;
+        background-color: white;
+        border: 5px solid #ccc;
+        padding: 20px;
+        box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+        z-index: 100;
+    }
+
+    .share-icon {
+        cursor: pointer;
+        font-size: 20px;
+    }
+
+    .hero {
+        position: relative;
+        display: grid;
+        place-items: center;
+        color: var(--neutral-lt);
+        background: url("../static/img/blog/blog_index.jpeg") no-repeat;
+        background-size: cover;
+        background-position: center center;
+        height: 100vh;
+        text-align: center;
+        font-family: var(--title-font);
+        color: white;
+    }
+
+    .hero-arrow {
+        position: absolute;
+        bottom: 10px;
+        font-size: 5rem;
+        color: var(--neutral-white);
+        z-index: 1;
+    }
+
+    .hero-arrow:active,
+    .hero-arrow:visited {
+        opacity: 70%;
+    }
+
+    .hero h1 {
+        font-size: 7rem;
+
+    }
+
+    .imge img {
+        width: 385px;
+        height: 300px;
+        align-content: center;
+        /* max-width: 100%; */
+        /* border-top-right-radius: 2rem;
+        border-top-left-radius: 2rem; */
+        border-radius: 1.5rem;
+        cursor: pointer;
+    }
+
+    .title {
+        text-align: justify;
+        font-family: var(--title-font);
+        font-size: 5rem;
+        margin-left: 30px;
+
+    }
+
+    .title_intro {
+        text-align: justify;
+        font-family: var(--body-font);
+        font-size: 25px;
+        margin-left: 30px;
+
+    }
+
+    .title_body {
+        text-align: center;
+        font-family: var(--body-font);
+        font-size: 25px;
+    }
+
+    .title-intro-block {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .blog-block {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        /* Center vertically */
+        align-items: center;
+        /* Center horizontally */
+        max-width: 330px;
+        min-height: 400px;
+        /* Ensure the height for vertical centering */
+        text-align: center;
+        /* padding: 1rem; */
+        background-color: rgb(255, 255, 255);
+        box-sizing: border-box;
+        /* border: 1px solid #ccc; */
+
+        /*old-one*/
+        /* display: flex;
+        flex-direction: column; */
+        /* box-sizing: border-box; */
+        /* margin: 0px auto; */
+        /* border-right: 0.5px solid #000;
+        border-bottom: 0.5px solid #000; */
+        border-radius: 1.5rem;
+        /* width: 385px;
+        text-align: center;
+        align-items: center; */
+        box-shadow: 3px 3px 5px var(--shadow-gray);
+        /* padding: 1rem; */
+        /* background-color: rgb(255, 255, 255);  */
+    }
+
+
+
+    .intro2 {
+        font-size: 22px;
+        font-family: var(--body-font);
+        margin-bottom: 16.600px;
+    }
+
+    .content_title_blog h2 a {
+        text-decoration: none;
+        color: var(--title-color);
+    }
+
+
+    .blog_content {
+        display: flex;
+        justify-content: center;
+        /* Center content horizontally */
+        flex-wrap: wrap;
+        /* Allow content to wrap for multiple items */
+        align-content: center;
+        /* Align content in center */
+        gap: 2rem;
+        /* Space between blog blocks */
+
+    }
+
+    .content-title {
+        font-family: var(--title-font);
+        font-size: 30px;
+    }
+
+    .index_page_image {
+        border: solid;
+        padding-top: 50px;
+        padding-bottom: 100px;
+        margin-left: 40px;
+        margin-right: 40px;
+        /* padding-left: 30px;
+        padding-right: 30px; */
+        border-radius: 40px;
+        /* background: url('../static/img/tales_index_image22.jpg'); */
+    }
+
+    .index_page_image {
+        /* width: 385px;
+        height: 300px; */
+        background-image: url('../static/img/tales_index_image22.jpg') repeat none;
+        background-color: #FFFDD0;
+        /* background-color: aquamarine; */
+    }
+
+    .index_page_image .img_blog {
+        width: 40%;
+        height: 80%;
+        float: right;
+        margin: 10px;
+    }
+
+    .img_blog img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .gallery-item {
+        position: absolute;
+        height: 100%;
+        width: 100%;
+        overflow: hidden;
+        border-radius: 10px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+        transition: transform 0.5s ease-in-out;
+        transform: scale(1);
+        z-index: -100;
+    }
+
+    .gallery-item img {
+        height: 100%;
+        width: 100%;
+        object-fit: fill;
+        transition: transform 0.5s ease-in-out;
+
+    }
+
+    /* Add mobile view styles */
+    @media (max-width: 768px) {
+        .main {
+            overflow-y: scroll;
+            scroll-snap-type: y mandatory;
+            height: 100vh;
+            /* Ensure main container takes full viewport height */
+
+        }
+
+        .content-title {
+            font-family: var(--title-font);
+            /* font-size: 40px; */
+        }
+
+        .blog_content {
+            flex-direction: column;
+        }
+
+
+
+        .imge img {
+            height: 60%;
+        }
+
+        .content-title {
+            font-size: 2rem;
+            justify-content: left;
+        }
+
+        .intro2 {
+            font-size: 1rem;
+            padding: 1rem;
+            justify-content: left;
+        }
+
+        .pagination {
+            list-style: none;
+        }
+
+        .page-item {
+            margin-right: 10px;
+        }
+
+        .index_page_image {
+            background-size: cover;
+            background-position: center;
+            padding: 4%;
+            border-radius: 20px;
+            margin-left: 0px;
+            margin-right: 0px;
+
+
+        }
+
+        .title {
+
+            margin: 0%;
+        }
+
+        .title_intro {
+
+            margin: 0%;
+        }
+
+
+    }
+
+    @media (max-width: 425px) {
+        .index_page_image {
+            border: solid;
+            padding: 6% 4%;
+            margin: 0% 4%;
+            /* background: url('../static/img/tales_index_image22.jpg'); */
+        }
+
+        .index_page_image {
+            /* width: 385px;
+            height: 300px; */
+            background: url('../static/img/tales_index_image22.jpg') repeat none;
+            background-color: #FFFDD0;
+            /* background-color: aquamarine; */
+        }
+
+        .index_page_image .title {
+            font-size: 30px;
+        }
+
+        .index_page_image .title_intro {
+            font-size: 16px;
+        }
+
+        .gallery-item img {
+            height: 100%;
+            width: 100%;
+            object-fit: cover;
+            transition: transform 0.5s ease-in-out;
+
+        }
+    }
+</style>
+{% comment %}
+<script>
+    window.addEventListener('load', function () {
+        window.scrollTo(0, 0);
+    });
+</script> {% endcomment %}
+<header class="hero">
+    {% for item in page.gallery_images.all %}
+    <div class="gallery-item">
+        {% image item.image fill-1000x400 %}
+        <p class="caption">{{ item.caption }}</p>
+    </div>
+    {% endfor %}
+    <div class="hero-text">
+        <h1>Blog Tales</h1>
+        <p style="font-size: 30px;">Celebrate love through our blogs</p>
+    </div>
+    <a href="#blog-post" class="hero-arrow" aria-label="Scroll down to the blog posts">
+        <i class='bx bxs-chevrons-down bx-fade-down'></i>
+    </a>
+</header>
+<main id="blog-post"
+    style="display: flex; justify-content: center; flex-direction: column;padding: 2%;; margin-top: 100px; background-color: var(--body-color);gap: 8rem;">
+    <head>
+        {% include "wagtailseo/meta.html" %}
+    </head>
+    <body>
+        <div class="blog_content">
+            {% for post in posts %}
+            {% with post=post.specific %}
+
+            <div class="blog-block" style="justify-content: start;">
+
+                <div class="imge">
+                    {% with post.main_image as main_image %}
+                    {% if main_image %}
+                    <a href="{% pageurl post %}">
+                        <div style="display: flex; justify-content: center;">{% image main_image fill-385x385 %}</div>
+                    </a>
+                    {% endif %}
+                    {% endwith %}
+                </div>
+                <div class="content_title_blog" style="display: flex; text-decoration: none; color: black;">
+                    <h2 style=" font-size: 20px; justify-content: flex-start;">
+                        <a href="{% pageurl post %}">{{ post.title}}</a>
+                    </h2>
+                    <!-- <i class='bx bxs-chevron-right bx-fade-left' style="font-size: 46px; line-height: 1.65; "></i> -->
+                    <!-- <i class='bx bx-chevron-right'
+                        style="font-size: 50px; line-height: 1.65; position: relative; position: translateX(40px);">
+                    </i> -->
+                </div>
+                <div class="intro2" style="font-size: 17px;">{{ post.intro|richtext|truncatechars:75 }}</div>
+
+                <div class="blog-card" style="flex-direction: row; left: 20px;">
+                    <div class="blog-post">
+                        <h2>{{ blog.title }}</h2>
+                        <p>{{ blog.intro }}</p>
+                        {% comment %} <button class="like-button" data-blog-id="{{ blog.id }}" data-liked="false" style="color: red;">
+                            ❤️  <span class="like-count">{{ post.like_count }}</span>Like
+                        </button> {% endcomment %}
+                    </div>
+                    <div></div>
+                    
+                    
+                    
+
+                    
+                    {% comment %} <div class="share-icon" onclick="toggleShareBox({{ post.id }}, event)" style="flex-direction: row;">
+                        <i class="fa fa-share-alt">>>></i>
+                    </div>
+                    <div class="share-box" id="share-box-{{ post.id }}" style="display:none;">
+                        <input type="text" id="share-link-{{ post.id }}" value="{{ post.full_url }}" readonly>
+                        <button onclick="copyShareLink({{ post.id }})">Copy Link</button>
+                    </div> {% endcomment %}
+                </div>
+                
+            </div>
+
+
+            {% endwith %}
+            {% endfor %}
+
+        </div>
+
+        <!-- pagination -->
+        {% if posts.paginator.num_pages > 1 %}
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12">
+                    <ul class="pagination" style="display: flex; justify-content: center; padding-top: 40px;">
+                        {% if posts.has_previous %}
+                        <li class="page-item" style="padding-right: 15px; font-size: 40px;">
+                            <a href="?page={{ posts.previous_page_number }}" class="page-link">
+                                <span>&laquo;</span>
+                            </a>
+                        </li>
+                        {% endif %}
+
+                        {% for page_num in posts.paginator.page_range %}
+                        <li class="page-item {% if page_num == posts.number %} active{% endif %}"
+                            style="padding-right: 15px;font-size: 40px;">
+                            <a href="?page={{ page_num }}" class="page-link">
+                                {{ page_num }}
+                            </a>
+                        </li>
+                        {% endfor %}
+
+                        {% if posts.has_next %}
+                        <li class="page-item" style="padding-right: 15px; font-size: 40px; ">
+                            <a href="?page={{ posts.next_page_number }}" class="page-link">
+                                <span>&raquo;</span>
+                            </a>
+                        </li>
+                        {% endif %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+        {% include "wagtailseo/struct_data.html" %}
+    </body>
+</main>
+{% for blog in posts %}
+<div class="blog-card">
+    <!-- Blog content -->
+    <!-- <h1>nan</h1> -->
+    <!-- Comment icon -->
+
+
+    <!-- Hidden comment section -->
+    
+</div>
+{% endfor %}
+
+<script>
+
+//----------share-option js-----------------
+
+function toggleShareBox(postId, event) {
+        event.stopPropagation();  // Prevents the event from bubbling up (in case there are other handlers)
+        
+        // Get the share box using the post ID
+        var shareBox = document.getElementById('share-box-' + postId);
+        
+        // Toggle the display property of the share box
+        if (shareBox.style.display === 'none' || shareBox.style.display === '') {
+            shareBox.style.display = 'block';
+        } else {
+            shareBox.style.display = 'none';
+        }
+    }
+
+    // Function to copy the share link to the clipboard
+    function copyShareLink(postId) {
+        var shareLink = document.getElementById('share-link-' + postId);
+        shareLink.select();
+        document.execCommand("copy");
+        alert("Link copied to clipboard!");
+    }
+
+    // Optional: Hide the share box if you click anywhere outside of it
+    window.onclick = function(event) {
+        var shareBoxes = document.querySelectorAll('.share-box');
+        shareBoxes.forEach(function(shareBox) {
+            if (!shareBox.contains(event.target)) {
+                shareBox.style.display = 'none';
+            }
+        });
+    }
+
+
+//-------------------------like option js---------------------- 
+    document.addEventListener('DOMContentLoaded', () => {
+    const likeButtons = document.querySelectorAll('.like-button');
+
+    likeButtons.forEach(button => {
+        button.addEventListener('click', () => {
+            const blogId = button.getAttribute('data-blog-id');
+            const liked = button.getAttribute('data-liked') === 'true';
+            const newLikedStatus = !liked;
+
+            // Update the button UI
+            button.setAttribute('data-liked', newLikedStatus);
+            button.style.color = newLikedStatus ? 'blue' : 'red';
+
+            // Fetch the current like count
+            const currentCount = parseInt(button.querySelector('.like-count').textContent);
+
+            // Prepare the new count
+            const newCount = newLikedStatus ? currentCount + 1 : currentCount - 1;
+            button.querySelector('.like-count').textContent = newCount;
+
+            // Send like/dislike request to the server
+            fetch(`/like/${blogId}/`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': getCookie('csrftoken'), // Function to get CSRF token
+                },
+                body: JSON.stringify({ liked: newLikedStatus }),
+            });
+        });
+    });
+
+    function getCookie(name) {
+        const cookieValue = document.cookie.split('; ').find(row => row.startsWith(name));
+        return cookieValue ? cookieValue.split('=')[1] : null;
+    }
+});
+
+
+
+
+
+
+
+
+    
+
+
+</script>
+
+
+
+{% endblock %}
